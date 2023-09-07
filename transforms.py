@@ -12,3 +12,11 @@ def seconds_to_reaper_js_delay_midi_cc(seconds):
     if cc_out < 0:
         cc_out = 0
     return int(cc_out)
+
+def seconds_to_byod_delay_midi_cc(seconds):
+    cc_out = (127 / 2000) * seconds * 1000
+    if cc_out > 127:
+        cc_out = 127
+    if cc_out < 0:
+        cc_out = 0
+    return int(cc_out)
