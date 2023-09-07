@@ -28,7 +28,9 @@ def toggle_behaviour(channel=0, control=20, on_cc_value=127, off_cc_value=0):
     return toggle_behaviour_call
 
 def tap_tempo_behaviour(channel=0, control=20, taps=4, reset_after=1, transform=None):
-
+    """
+    Allows using the footswitch as a tap tempo control.
+    """
     deltas = []
 
     def tap_tempo_behaviour_call(midi_out, delta):
@@ -58,3 +60,23 @@ def tap_tempo_behaviour(channel=0, control=20, taps=4, reset_after=1, transform=
 
     return tap_tempo_behaviour_call
 
+def keyboard_behaviour(key, ctrl=False, shift=False):
+    """
+    Allows using the footswitch to perform keypresses
+    """
+    from pynput.keyboard import Key, Controller
+    keyboard = Controller()
+
+    def keyboard_behaviour_call(midi_out, delta):
+        if ctrl:
+            keyboard.press(Key.ctrl)
+        if shift:
+            keyboard.press(Key.shift)
+        keyboard.press(key)
+        keyboard.release(key)
+        if ctrl:
+            keyboard.release(Key.ctrl)
+        if shift:
+            keyboard.release(Key.shift)
+
+    return keyboard_behaviour_call
