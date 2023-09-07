@@ -1,4 +1,4 @@
-def build_midi_message(message_type, channel, control_index, value):
+def _build(message_type, channel, control_index, value):
     if channel > 15 or channel < 0:
         raise AssertionError("Channel must be a value between 0 and 15")
     if control_index < 0 or control_index > 120:
@@ -10,4 +10,4 @@ def build_midi_message(message_type, channel, control_index, value):
     return [ message_type_with_channel, control_index, value ]
 
 def control_change(channel, control_index, value):
-    return build_midi_message(0b1011_0000, channel, control_index, value)
+    return _build(0b1011_0000, channel, control_index, value)
