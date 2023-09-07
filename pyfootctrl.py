@@ -1,10 +1,11 @@
+import time
+
 import rtmidi # https://spotlightkid.github.io/python-rtmidi/
-from collections import defaultdict
-from behaviours import null_behaviour, toggle_behaviour, tap_tempo_behaviour
-from transforms import seconds_to_reaper_js_delay_midi_cc
+
+from config import behaviour
 from chocolate import display
 
-# get loop midi at https://www.tobias-erichsen.de/software/loopmidi.html
+# For windows, get loop midi at https://www.tobias-erichsen.de/software/loopmidi.html
 # midiberry for BLE https://apps.microsoft.com/store/detail/midiberry/9N39720H2M05?hl=pt-br&gl=br
 
 midi_in = rtmidi.MidiIn()
@@ -25,32 +26,34 @@ def user_input_midi_ports():
     print(f"Input: {in_ports_by_name[in_port]} | Output: {out_ports_by_name[out_port]}")
     return in_port, out_port
 
+def match_device_name(expected_name_parts, device_name):
+    for expected_name_part in expected_name_parts:
+        if expected_name_part in device_name:
+            return True
+    return False
+
 def default_midi_ports():
     """
     Return the default MIDI ports indexes, with MIDI IN as USB-Midi and MIDI OUT as loopMIDI
     """
 
-    DEFAULT_MIDI_IN_PORT_NAME = 'USB-Midi'
-    DEFAULT_MIDI_OUT_PORT_NAME = 'loopMIDI'
+    DEFAULT_MIDI_IN_PORT_NAMES = ['FootCtrl','USB-Midi']
+    DEFAULT_MIDI_OUT_PORT_NAMES = ['Midi Through','loopMIDI']
+    in_port_index = None
+    out_port_index = None
     for index, port_name in enumerate(in_ports_by_name):
-        if DEFAULT_MIDI_IN_PORT_NAME in port_name:
+        if match_device_name(DEFAULT_MIDI_IN_PORT_NAMES, port_name):
             in_port_index = index
             break
+    else:
+        print("MIDI input device not found")
     for index, port_name in enumerate(out_ports_by_name):
-        if DEFAULT_MIDI_OUT_PORT_NAME in port_name:
+        if match_device_name(DEFAULT_MIDI_OUT_PORT_NAMES, port_name):
             out_port_index = index
             break
+    else:
+        print("MIDI output device not found")
     return in_port_index, out_port_index
-
-
-
-# behaviours per switch
-behaviour = defaultdict(null_behaviour)
-
-behaviour['1A'] = toggle_behaviour(channel=0, control=20, off_cc_value=1)
-behaviour['1B'] = toggle_behaviour(channel=0, control=21, off_cc_value=1)
-behaviour['1C'] = toggle_behaviour(channel=0, control=22, off_cc_value=1)
-behaviour['1D'] = tap_tempo_behaviour(channel=0, control=23, reset_after=4.001, transform=seconds_to_reaper_js_delay_midi_cc)
 
 def start_midi_loop(midi_in, midi_out):
     print("Starting MIDI message processing loop...")
@@ -65,11 +68,16 @@ def start_midi_loop(midi_in, midi_out):
             except ValueError as e:
                 print(e)
                 print(message)
+        time.sleep(0.001)
+
 
 if __name__ == '__main__':
     in_port, out_port = default_midi_ports()
     midi_in.open_port(in_port)
     midi_out.open_port(out_port)
-    start_midi_loop(midi_in, midi_out)
-
+    try:
+        start_midi_loop(midi_in, midi_out)
+    except KeyboardInterrupt:
+        print("Bye!")
+        exit(0)
 
