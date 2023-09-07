@@ -1,6 +1,6 @@
 # PyFootCtrl
 
-PyFootCtrl is a homebrew companion application for M-VAVE Chocolate Footswitch Controller written in Python.
+PyFootCtrl is a homebrew companion application for [M-VAVE Chocolate Footswitch Controller](http://www.cuvave.com/productinfo/724103.html) written in Python.
 
 It allows implementing custom behaviours for each footswitch press, organized by the default banks, without using any other companion apps.
 
