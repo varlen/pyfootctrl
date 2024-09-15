@@ -27,6 +27,35 @@ def toggle_behaviour(channel=0, control=20, on_cc_value=127, off_cc_value=0):
 
     return toggle_behaviour_call
 
+def trigger_note_behaviour(channel=0, note=midi_message.MIDDLE_C, velocity=127, release_velocity=127):
+
+    def trigger_note_behaviour_call(midi_out, delta):
+
+        msg = midi_message.note_on(channel, note, velocity)
+        midi_out.send_message(msg)
+        msg = midi_message.note_off(channel, note, release_velocity)
+        midi_out.send_message(msg)
+        print("[TRIGGER NOTE]", msg)
+
+    return trigger_note_behaviour_call
+
+def toggle_note_behaviour(channel=0, note=midi_message.MIDDLE_C, velocity=127, release_velocity=127):
+    state = False
+    def toggle_note_behaviour_call(midi_out, delta):
+        nonlocal state
+        state = not state
+        if state:
+            msg = midi_message.note_on(channel, note, velocity)
+            midi_out.send_message(msg)
+            print(msg)
+        else:
+            msg = midi_message.note_off(channel, note, release_velocity)
+            midi_out.send_message(msg)
+            print(msg)
+
+    return toggle_note_behaviour_call
+
+
 def tap_tempo_behaviour(channel=0, control=20, taps=4, reset_after=1, transform=None):
     """
     Allows using the footswitch as a tap tempo control.
