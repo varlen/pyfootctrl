@@ -32,6 +32,10 @@ There are two builtin behavior templates:
 
 - **tap tempo** - Allows outputting a control value that is proportional to the time between a predefined number of pedal presses. It requires tunning according to the range of time values accepted by the application and currently have predefined support for both Reaper JS delay effect and BYOD delay.
 
+- **toggle note** - Similar to **toggle** but changes a MIDI note ON and OFF. Useful for controlling pad sounds
+
+- **trigger note** - Sends a note on followed by a note off MIDI event. Useful for triggering samples.
+
 - **keyboard** - Allows performing keystrokes from footswitch presses. It requires `pynput` to work. It is possible to send a single key, or a combination of a key plus `Ctrl` or `Shift`.
 
 These behaviors are mainly useful for musical applications but nothing prevents you from coding behaviors to perform any other action in the computer instead of MIDI output.
