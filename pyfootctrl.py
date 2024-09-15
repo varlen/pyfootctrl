@@ -1,3 +1,4 @@
+import argparse
 import time
 
 import rtmidi # https://spotlightkid.github.io/python-rtmidi/
@@ -38,18 +39,20 @@ def default_midi_ports():
     """
 
     DEFAULT_MIDI_IN_PORT_NAMES = ['FootCtrl','USB-Midi']
-    DEFAULT_MIDI_OUT_PORT_NAMES = ['Midi Through','loopMIDI']
+    DEFAULT_MIDI_OUT_PORT_NAMES = ['Virtual'] #['Virtual','Midi Through','loopMIDI']
     in_port_index = None
     out_port_index = None
     for index, port_name in enumerate(in_ports_by_name):
         if match_device_name(DEFAULT_MIDI_IN_PORT_NAMES, port_name):
             in_port_index = index
+            print(f"Using {port_name} as MIDI in")
             break
     else:
         print("MIDI input device not found")
     for index, port_name in enumerate(out_ports_by_name):
         if match_device_name(DEFAULT_MIDI_OUT_PORT_NAMES, port_name):
             out_port_index = index
+            print(f"Using {port_name} as MIDI out")
             break
     else:
         print("MIDI output device not found")
@@ -72,9 +75,29 @@ def start_midi_loop(midi_in, midi_out):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        prog='PyFootControl',
+        description='Expands capabilities of M-Vave Chocolate footswitch controller'
+    )
+    parser.add_argument('-i', '--input', type=int, help="Number of the input channel (the footswitch controller).")
+    parser.add_argument('-o', '--output', type=int, help="Number of the output channel, probably the MIDI loopback or virtual cable.")
+    parser.add_argument('-l', '--list', action='store_true', help="List MIDI device indexes and quit")
+    args = parser.parse_args()
+
     in_port, out_port = default_midi_ports()
-    midi_in.open_port(in_port)
-    midi_out.open_port(out_port)
+    if args.input:
+        midi_in.open_port(args.input)
+    else:
+        midi_in.open_port(in_port)
+
+    if args.output:
+        midi_out.open_port(args.output)
+    else:
+        midi_out.open_port(out_port)
+
+    if args.list:
+        display_midi_ports()
+        exit(0)
     try:
         start_midi_loop(midi_in, midi_out)
     except KeyboardInterrupt:
