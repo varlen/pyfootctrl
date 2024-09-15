@@ -18,12 +18,12 @@ def toggle_behaviour(channel=0, control=20, on_cc_value=127, off_cc_value=0):
         state = not state
         if state:
             msg = midi_message.control_change(channel, control, on_cc_value)
-            print(msg)
             midi_out.send_message(msg)
+            print(msg)
         else:
             msg = midi_message.control_change(channel, control, off_cc_value)
-            print(msg)
             midi_out.send_message(msg)
+            print(msg)
 
     return toggle_behaviour_call
 
